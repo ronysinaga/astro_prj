@@ -1,6 +1,19 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-const allPosts = await Object.values(import.meta.glob('../posts/*.md', { eager: true }));
+
+interface Frontmatter {
+  title: string;
+  tags?: string[];
+  [key: string]: any;
+}
+
+interface MarkdownPost {
+  frontmatter: Frontmatter;
+  file: string;
+  url: string;
+}
+
+const allPosts = await Object.values(import.meta.glob<MarkdownPost>('../posts/*.md', { eager: true }));
 
 // Get all posts that have tags defined
 const postsWithTags = allPosts.filter((post) => Array.isArray(post.frontmatter.tags));

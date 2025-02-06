@@ -2,8 +2,18 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogPost from '../../components/BlogPost.astro';
 
+interface Frontmatter {
+  title: string;
+  tags?: string[];
+}
+
+interface Post {
+  frontmatter: Frontmatter;
+  url: string;
+}
+
 export async function getStaticPaths() {
-  const allPosts = Object.values(import.meta.glob('../posts/*.md', { eager: true }));
+  const allPosts = await Object.values(import.meta.glob<Post>('../posts/*.md', { eager: true }));
 
   // Filter out posts without tags and get unique tags
   const uniqueTags = [...new Set(
@@ -15,7 +25,7 @@ export async function getStaticPaths() {
 
   return uniqueTags.map((tag) => {
     const filteredPosts = allPosts.filter((post) => 
-      post.frontmatter.tags?.includes(tag)
+      post.frontmatter.tags?.includes(tag as string)
     );
     return {
       params: { tag },
