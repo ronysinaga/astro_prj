@@ -1,25 +1,14 @@
 ---
+import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-interface Frontmatter {
-  title: string;
-  tags?: string[];
-  [key: string]: any;
-}
-
-interface MarkdownPost {
-  frontmatter: Frontmatter;
-  file: string;
-  url: string;
-}
-
-const allPosts = await Object.values(import.meta.glob<MarkdownPost>('../posts/*.md', { eager: true }));
+const allPosts = await getCollection("blog");
 
 // Get all posts that have tags defined
-const postsWithTags = allPosts.filter((post) => Array.isArray(post.frontmatter.tags));
+const postsWithTags = allPosts.filter((post: CollectionEntry<'blog'>) => Array.isArray(post.data.tags));
 
 // Get unique tags
-const tags = [...new Set(postsWithTags.map((post) => post.frontmatter.tags).flat())];
+const tags = [...new Set(postsWithTags.map((post: CollectionEntry<'blog'>) => post.data.tags).flat())];
 const pageTitle = "Tag Index";
 ---
 <BaseLayout pageTitle={pageTitle}>

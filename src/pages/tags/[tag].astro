@@ -1,4 +1,5 @@
 ---
+import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogPost from '../../components/BlogPost.astro';
 
@@ -13,19 +14,19 @@ interface Post {
 }
 
 export async function getStaticPaths() {
-  const allPosts = await Object.values(import.meta.glob<Post>('../posts/*.md', { eager: true }));
+  const allPosts = await getCollection("blog");
 
   // Filter out posts without tags and get unique tags
   const uniqueTags = [...new Set(
     allPosts
-      .filter(post => post.frontmatter.tags)
-      .map(post => post.frontmatter.tags)
+      .filter((post: CollectionEntry<'blog'>) => post.data.tags)
+      .map((post: CollectionEntry<'blog'>) => post.data.tags)
       .flat()
   )];
 
   return uniqueTags.map((tag) => {
-    const filteredPosts = allPosts.filter((post) => 
-      post.frontmatter.tags?.includes(tag as string)
+    const filteredPosts = allPosts.filter((post: CollectionEntry<'blog'>) => 
+      post.data.tags?.includes(tag as string)
     );
     return {
       params: { tag },
@@ -40,6 +41,6 @@ const { posts } = Astro.props;
 <BaseLayout pageTitle={tag}>
   <p>Posts tagged with {tag}</p>
   <ul>
-    {posts.map((post) => <BlogPost url={post.url} title={post.frontmatter.title}/>)}
+    {posts.map((post: CollectionEntry<'blog'>) => <BlogPost url={`/posts/${post.id}/`} title={post.data.title}/>)}
   </ul>
 </BaseLayout>
