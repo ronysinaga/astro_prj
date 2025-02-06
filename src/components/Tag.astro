@@ -1,0 +1,20 @@
+---
+const { tag } = Astro.props;
+---
+<a href={`/tags/${tag}`} class="tag">#{tag}</a>
+
+<style>
+  .tag {
+    background: #e5e7eb;
+    color: #4b5563;
+    padding: 0.3rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .tag:hover {
+    background: #4b5563;
+    color: #ffffff;
+  }
+</style>
